@@ -1,0 +1,50 @@
+rm(list = ls())
+
+# set wd and read file
+setwd("/harbort/R/")
+cytokines <- c("IL1a", "IL1b", "IL2", "IL3", "IL4", "IL5","IL6", "IL9", "IL10", "IL12p40", "IL12p70", "IL13", "IL17", "Eotaxin","GCSF", "GMCSF", "IFNg", "KC", "MCP1", "MIP1a", "MIP1b", "RANTES", "TNF")
+Original.df <- read.delim("test stars oors-1.txt", row.names = 1, col.names = c("Sample", cytokines))
+
+# function to replace periods with commas
+commareplace <- function(x) {gsub(",", replacement = ".", x)}
+# Apply to dataframe 
+replaced.df <- as.data.frame(apply(Original.df, 2, commareplace))
+
+# Function to replace stars
+starreplace <- function(x) {gsub("\\*", replacement = "", x)}
+# Apply to dataframe 
+replaced.df <- as.data.frame(apply(replaced.df, 2, starreplace))
+
+# Don't have to replace *** with NA, because now they are deleted and will be NA
+
+# Function to replace "OOR <" with 0
+OORreplace <- function(x) {gsub("OOR <", replacement = "0", x)}
+# Apply to dataframe
+replaced.df <- as.data.frame(apply(replaced.df, 2, OORreplace), stringsAsFactors = FALSE)
+
+
+
+# Convert dataframe columns from character to numeric
+replaced.df <- data.frame(apply(replaced.df, 2, function(x) as.numeric(as.character(x))), row.names = row.names(replaced.df))
+str(replaced.df)
+
+#created a vector containing the LLOQs named, in the order of the bioplex (alphabetical)
+minvalues <- c(1.84, 10.36, 3.72, 1.55, 6.98, 3.57, 0.74, 6.89, 2.95, 1.53, 1.62, 47.20, 2.65, 257.90, 5.10, 21.20, 1.84, 3.20, 22.40, 256.20, 3.33, 2.78, 5.80)
+
+# makes empty vector to late put in the number of replacements made per cytokine
+replacements <- numeric(length = 23)
+names(replacements) = cytokines
+
+for(i in 1:23) {
+        logi <- replaced.df[,i] < minvalues[i] # make logical vector of which values are below LLOQ
+        replacements[i] <- sum(logi, na.rm = TRUE) # number of values below LLOQ printed into replacements vector
+        replaced.df[,i][logi] <- minvalues[i] # values below LLOQ are replaced with the LLOQ
+}
+print(replacements)
+
+
+# Save files in wd as csv files
+
+write.table(replaced.df, file = "replacedvalues.csv", sep=",", row.names = FALSE)
+
+write.table(replacements, file = "replacementvector.csv", sep = ",")

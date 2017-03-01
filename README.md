@@ -2,15 +2,19 @@
 # CJ Harbort
 # 01.03.2017
 
-## This script takes a generic bioplex result file and replaces 
-## out of range values with the LLOQ, and *** with NAs determined by BioRad
+This script takes a generic bioplex result file and replaces any 
+out of range values with the LLOQ, and ``***`` values with NAs.
+Also renames the cytokine columns with simple cytokine names.
 
-## FORMAT:
-        ### Make a tab delimited file of 24 columns: 
-        ### first column is sample names or wells, followed by 23 cytokines in columns
+In the end, saves a new file with replaced values and a file showing how
+many replacements were made for each cytokine.
 
-## Change the working directory to wherever your file is, it will save the final results as 
-        ### Replacedvalues.csv - file of bioplex data 
-        ### Replacementvector - list of how many changes were made for LLOQ 
+FORMAT:
+       Make a tab delimited file of 24 columns: 
+       first column is sample names or wells, followed by 23 cytokines in columns
 
-## Compare Replaced.df with Original.df as control
+Change the working directory to wherever your file is, it will save the final results as 
+       Replacedvalues.csv - file of bioplex data 
+       Replacementvector - list of how many changes were made for LLOQ 
+
+Compare Replaced.df with Original.df as control
